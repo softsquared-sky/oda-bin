@@ -27,40 +27,40 @@
 			 * API Name : 테스트 API
 			 * 마지막 수정 날짜 : 19.04.29
 			 */
-//        case "test":
-//            http_response_code(200);
-//            $res->result = test();
-//            $res->isSuccess = TRUE;
-//            $res->code = 100;
-//            $res->message = "테스트 성공";
-//            echo json_encode($res, JSON_NUMERIC_CHECK);
-//            break;
-//        /*
-//         * API No. 0
-//         * API Name : 테스트 Path Variable API
-//         * 마지막 수정 날짜 : 19.04.29
-//         */
-//        case "testDetail":
-//            http_response_code(200);
-//            $res->result = testDetail($vars["testNo"]);
-//            $res->isSuccess = TRUE;
-//            $res->code = 100;
-//            $res->message = "테스트 성공";
-//            echo json_encode($res, JSON_NUMERIC_CHECK);
-//            break;
-//        /*
-//         * API No. 0
-//         * API Name : 테스트 Body & Insert API
-//         * 마지막 수정 날짜 : 19.04.29
-//         */
-//        case "testPost":
-//            http_response_code(200);
-//            $res->result = testPost($req->name);
-//            $res->isSuccess = TRUE;
-//            $res->code = 100;
-//            $res->message = "테스트 성공";
-//            echo json_encode($res, JSON_NUMERIC_CHECK);
-//            break;
+			case "test":
+				http_response_code(200);
+				$res->result = test();
+				$res->isSuccess = TRUE;
+				$res->code = 100;
+				$res->message = "테스트 성공";
+				echo json_encode($res, JSON_NUMERIC_CHECK);
+				break;
+			/*
+			 * API No. 0
+			 * API Name : 테스트 Path Variable API
+			 * 마지막 수정 날짜 : 19.04.29
+			 */
+			case "testDetail":
+				http_response_code(200);
+				$res->result = testDetail($vars["testNo"]);
+				$res->isSuccess = TRUE;
+				$res->code = 100;
+				$res->message = "테스트 성공";
+				echo json_encode($res, JSON_NUMERIC_CHECK);
+				break;
+			/*
+			 * API No. 0
+			 * API Name : 테스트 Body & Insert API
+			 * 마지막 수정 날짜 : 19.04.29
+			 */
+			case "testPost":
+				http_response_code(200);
+				$res->result = testPost($req->name);
+				$res->isSuccess = TRUE;
+				$res->code = 100;
+				$res->message = "테스트 성공";
+				echo json_encode($res, JSON_NUMERIC_CHECK);
+				break;
 
 			case "id":
 				$id = $req->id;
@@ -98,7 +98,7 @@
 					$res->message = "id나 직종에 특수문자가 입력됬습니다";
 					http_response_code(200);
 				} else {
-					$res->id = signup($id, $pw, $ad, $bs);
+					$res->id = Signup($id, $pw, $ad, $bs);
 					$res->isSuccess = true;
 					$res->code = 200;
 					$res->message = "회원가입성공";

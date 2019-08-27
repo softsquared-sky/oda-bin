@@ -77,11 +77,10 @@
 
 		$st = $pdo->prepare($query);
 		if ($st->execute([$id, $pw, $business, $ad, $id])) {
-			$res = Array();
-			$res["id"] = $id;
+			$res = $id;
 			$st = null;
 			$pdo = null;
-			return Array($res);
+			return $res;
 		} else {
 			$res = null;
 			return $res;
@@ -89,6 +88,35 @@
 
 	}
 
+	function login($id, $pw)
+	{
+		$pdo = pdoSqlConnect();
+		$query = "SELECT EXISTS (SELECT * FROM User WHERE id = ? AND pw = ?) AS exist;";
+
+		$st = $pdo->prepare($query);
+		$st->execute([$id, $pw]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res = $st->fetchAll();
+
+		$st = null;
+		$pdo = null;
+		return intval($res[0]["exist"]);
+	}
+
+	function isValidJWToken($id, $pw)
+	{
+		$pdo = pdoSqlConnect();
+		$query = "SELECT EXISTS (SELECT * FROM User WHERE id = ? AND pw = ?) AS exist;";
+
+		$st = $pdo->prepare($query);
+		$st->execute([$id, $pw]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res = $st->fetchAll();
+
+		$st = null;
+		$pdo = null;
+		return intval($res[0]["exist"]);
+	}
 	// CREATE
 	//    function addMaintenance($message){
 	//        $pdo = pdoSqlConnect();
