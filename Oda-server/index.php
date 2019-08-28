@@ -25,7 +25,10 @@
 		$r->addRoute('POST', '/user', ['IndexController', 'signup']);
 		$r->addRoute('GET', '/id', ['IndexController', 'id']);
 		$r->addRoute('POST', '/user/{userid}', ['MainController', 'login']);
-
+		$r->addRoute('GET', '/product', ['IndexController', 'searchProduct']);
+		$r->addRoute('GET', '/product/{productNum}', ['IndexController', 'viewProduct']);
+		$r->addRoute('GET', '/productDetail', ['IndexController', 'viewProductDetail']);
+		$r->addRoute('GET', '/productReview', ['IndexController', 'viewProductReview']);
 
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');

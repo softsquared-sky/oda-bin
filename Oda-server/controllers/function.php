@@ -174,6 +174,27 @@
 //        fpassthru($fp);
 		fclose($fp);
 	}
+
+	function GetBusiness($bs){
+		if($bs == 1){
+			$res = "한식";
+		}else if($bs == 2){
+			$res = "양식";
+		}else if($bs == 3){
+			$res = "중식";
+		}else if($bs == 4){
+			$res = "일식";
+		}else if($bs == 5){
+			$res = "분식";
+		}else if($bs == 6){
+			$res = "베이커리/카페";
+		}else if($bs == 7){
+			$res = "패스트푸드";
+		}else{
+			$res = "기타";
+		}
+		return $res;
+	}
 	//
 	//function CheckBs($bs){
 	//

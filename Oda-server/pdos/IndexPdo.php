@@ -117,6 +117,55 @@
 		$pdo = null;
 		return intval($res[0]["exist"]);
 	}
+
+	function Search($pName)
+	{
+		$pdo = pdoSqlConnect();
+		$query = "SELECT p.pNum,p.pName,p.price,i.imageUrl from Product as p inner join ProductImage as i on p.pNum = i.pNum where (p.pName like ? and i.turn = 1);";
+		$st = $pdo->prepare($query);
+		$st->execute(["%$pName%"]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res = $st->fetchAll();
+		$st = null;
+		$pdo = null;
+		return $res;
+	}
+
+	function ViewProduct($pNum){
+		$pdo = pdoSqlConnect();
+		$query = "SELECT p.pNum,p.pName,p.price,i.imageUrl from Product as p inner join ProductImage as i on p.pNum = i.pNum where (p.pNum = ? and i.turn = 1);";
+		$st = $pdo->prepare($query);
+		$st->execute([$pNum]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res = $st->fetchAll();
+		$st = null;
+		$pdo = null;
+		return $res;
+	}
+
+	function ViewProductDetail($pNum){
+		$pdo = pdoSqlConnect();
+		$query = "SELECT p.pNum,p.qpp,p.storeMethod,p.origin,i.imageUrl from ProductDetail as p inner join ProductImage as i on p.pNum = i.pNum where p.pNum = ? order by i.turn;";
+		$st = $pdo->prepare($query);
+		$st->execute([$pNum]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res = $st->fetchAll();
+		$st = null;
+		$pdo = null;
+		return $res;
+	}
+
+	function ViewProductReview($pNum){
+		$pdo = pdoSqlConnect();
+		$query = "select r.id,r.review,r.reviewDate from Review as r where pNum = ?;";
+		$st = $pdo->prepare($query);
+		$st->execute([$pNum]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res = $st->fetchAll();
+		$st = null;
+		$pdo = null;
+		return $res;
+	}
 	// CREATE
 	//    function addMaintenance($message){
 	//        $pdo = pdoSqlConnect();
