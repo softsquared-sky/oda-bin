@@ -63,7 +63,7 @@
 				break;
 
 			case "id":
-				$id = $req->id;
+				$id = $_GET["id"];
 				http_response_code(200);
 				if (CheckId($id) == 1) {
 					$res->isSuccess = TRUE;
@@ -107,110 +107,6 @@
 				echo json_encode($res, JSON_NUMERIC_CHECK);
 				break;
 
-			case "searchProduct":
-				$pName = $req->pName;
-				if (empty($pName)) {
-					$res->isSuccess = false;
-					$res->code = 00;
-					$res->message = "공백이 입력됬습니다";
-					http_response_code(200);
-				} else {
-					$res->result = Array();
-					$res->result = Search($pName);
-					if ($res->result != null) {
-						$res->isSuccess = true;
-						$res->code = 300;
-						$res->message = "검색결과";
-						http_response_code(200);
-					} else {
-						$res = (Object)Array();
-						$res->isSuccess = FALSE;
-						$res->code = 350;
-						$res->message = "검색결과 없음";
-						http_response_code(200);
-					}
-				}
-				echo json_encode($res, JSON_NUMERIC_CHECK);
-				break;
-
-
-			case "viewProduct":
-				$pNum = $req->pNum;
-				if (empty($pNum)) {
-					$res->isSuccess = false;
-					$res->code = 00;
-					$res->message = "공백이 입력됬습니다";
-					http_response_code(200);
-				} else {
-					$res->result = Array();
-					$res->result = ViewProduct($pNum);
-					if ($res->result != null) {
-						$res->isSuccess = true;
-						$res->code = 400;
-						$res->message = "상품기본페이지";
-						http_response_code(200);
-					} else {
-						$res = (Object)Array();
-						$res->isSuccess = FALSE;
-						$res->code = 450;
-						$res->message = "DB오류";
-						http_response_code(200);
-					}
-				}
-				echo json_encode($res, JSON_NUMERIC_CHECK);
-				break;
-
-			case "viewProductDetail":
-				$pNum = $req->pNum;
-				if (empty($pNum)) {
-					$res->isSuccess = false;
-					$res->code = 00;
-					$res->message = "공백이 입력됬습니다";
-					http_response_code(200);
-				} else {
-					$res->result = Array();
-					$res->result = ViewProductDetail($pNum);
-					if ($res->result != null) {
-						$res->isSuccess = true;
-						$res->code = 500;
-						$res->message = "상품상세페이지";
-						http_response_code(200);
-					} else {
-						$res = (Object)Array();
-						$res->isSuccess = FALSE;
-						$res->code = 550;
-						$res->message = "DB오류";
-						http_response_code(200);
-					}
-				}
-				echo json_encode($res, JSON_NUMERIC_CHECK);
-				break;
-
-			case "viewProductReview":
-				$pNum = $req->pNum;
-				if (empty($pNum)) {
-					$res->isSuccess = false;
-					$res->code = 00;
-					$res->message = "공백이 입력됬습니다";
-					http_response_code(200);
-				} else {
-					$res->result = Array();
-					$res->result = ViewProductReview($pNum);
-					if ($res->result != null) {
-						$res->isSuccess = true;
-						$res->code = 600;
-						$res->message = "상품후기목록";
-						http_response_code(200);
-					} else {
-						$res = (Object)Array();
-						$res->isSuccess = true;
-						$res->code = 610;
-						$res->message = "상품후기가없습니다";
-						http_response_code(200);
-					}
-				}
-				echo json_encode($res, JSON_NUMERIC_CHECK);
-				break;
 		}
 	} catch (\Exception $e) {
 		return getSQLErrorException($errorLogs, $e, $req);
