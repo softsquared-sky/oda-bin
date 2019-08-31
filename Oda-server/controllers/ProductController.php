@@ -28,15 +28,16 @@
 			 * 마지막 수정 날짜 : 19.04.29
 			 */
 			case "searchProduct":
-				$pName = $req->pName;
+				$pName = $_GET["pName"];
+				$turn = $_GET["lastProductNum"];
 				if (empty($pName)) {
 					$res->isSuccess = false;
 					$res->code = 00;
-					$res->message = "공백이 입력됬습니다";
+					$res->message = "공백이 입력됐습니다";
 					http_response_code(200);
 				} else {
 					$res->result = Array();
-					$res->result = Search($pName);
+					$res->result = search($pName, $turn);
 					if ($res->result != null) {
 						$res->isSuccess = true;
 						$res->code = 300;
@@ -53,13 +54,12 @@
 				echo json_encode($res, JSON_NUMERIC_CHECK);
 				break;
 
-
 			case "viewProduct":
-				$pNum = $req->pNum;
+				$pNum = $_GET["pNum"];
 				if (empty($pNum)) {
 					$res->isSuccess = false;
 					$res->code = 00;
-					$res->message = "공백이 입력됬습니다";
+					$res->message = "공백이 입력됐습니다";
 					http_response_code(200);
 				} else {
 					$res->result = Array();
@@ -81,11 +81,11 @@
 				break;
 
 			case "viewProductDetail":
-				$pNum = $req->pNum;
+				$pNum = $_GET["pNum"];
 				if (empty($pNum)) {
 					$res->isSuccess = false;
 					$res->code = 00;
-					$res->message = "공백이 입력됬습니다";
+					$res->message = "공백이 입력됐습니다";
 					http_response_code(200);
 				} else {
 					$res->result = Array();
@@ -107,11 +107,11 @@
 				break;
 
 			case "viewProductReview":
-				$pNum = $req->pNum;
+				$pNum = $_GET["pNum"];
 				if (empty($pNum)) {
 					$res->isSuccess = false;
 					$res->code = 00;
-					$res->message = "공백이 입력됬습니다";
+					$res->message = "공백이 입력됐습니다";
 					http_response_code(200);
 				} else {
 					$res->result = Array();
@@ -131,6 +131,34 @@
 				}
 				echo json_encode($res, JSON_NUMERIC_CHECK);
 				break;
+
+			case "createReview" :
+				$jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+				if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+					$res->isSuccess = FALSE;
+					$res->code = 201;
+					$res->message = "유효하지 않은 토큰입니다";
+					echo json_encode($res, JSON_NUMERIC_CHECK);
+					addErrorLogs($errorLogs, $res, $req);
+					return;
+				}
+				$data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+				$id = $data->id;
+				$pNum = $res->pNum;
+				$review = $res->review;
+				$ig = $res->reviewImage;
+				if (empty($pNum)) {
+					$res->isSuccess = false;
+					$res->code = 00;
+					$res->message = "공백이 입력됐습니다";
+					http_response_code(200);
+				} else {
+					$res->Date = putReview($id,$pNum,$review,$ig);
+					$res->isSuccess = true;
+					$res->code = 700;
+					$res->message = "상품후기등록";
+					http_response_code(200);
+				}
 		}
 	} catch (\Exception $e) {
 		return getSQLErrorException($errorLogs, $e, $req);

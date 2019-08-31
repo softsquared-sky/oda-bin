@@ -1,7 +1,7 @@
 <?php
 	require 'function.php';
 
-	const JWT_SECRET_KEY = "HELLO_HELLO_HELLO_HELO_HELLO_HELLO_HELLO_HELLO_HELO_HELO_HELLO_HELLO_HELLO_HELLO_HELLO_HEO_HELLO_HELLO_HELLO_HELLO_HELLO_HELO_";
+	const JWT_SECRET_KEY = "TEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEY";
 
 	$res = (Object)Array();
 	header('Content-Type: json');
@@ -27,45 +27,10 @@
 			 * API Name : 테스트 API
 			 * 마지막 수정 날짜 : 19.04.29
 			 */
-			case "test":
-				http_response_code(200);
-				$res->result = test();
-				$res->isSuccess = TRUE;
-				$res->code = 100;
-				$res->message = "테스트 성공";
-				echo json_encode($res, JSON_NUMERIC_CHECK);
-				break;
-			/*
-			 * API No. 0
-			 * API Name : 테스트 Path Variable API
-			 * 마지막 수정 날짜 : 19.04.29
-			 */
-			case "testDetail":
-				http_response_code(200);
-				$res->result = testDetail($vars["testNo"]);
-				$res->isSuccess = TRUE;
-				$res->code = 100;
-				$res->message = "테스트 성공";
-				echo json_encode($res, JSON_NUMERIC_CHECK);
-				break;
-			/*
-			 * API No. 0
-			 * API Name : 테스트 Body & Insert API
-			 * 마지막 수정 날짜 : 19.04.29
-			 */
-			case "testPost":
-				http_response_code(200);
-				$res->result = testPost($req->name);
-				$res->isSuccess = TRUE;
-				$res->code = 100;
-				$res->message = "테스트 성공";
-				echo json_encode($res, JSON_NUMERIC_CHECK);
-				break;
-
 			case "id":
 				$id = $_GET["id"];
 				http_response_code(200);
-				if (CheckId($id) == 1) {
+				if (checkId($id) == 1) {
 					$res->isSuccess = TRUE;
 					$res->code = 100;
 					$res->message = "중복된ID존재";
@@ -84,21 +49,39 @@
 				$id = str_replace(' ', '', trim($req->id));
 				$pw = $req->pw;
 				$ad = $req->address;
-				$bs = $req->business;
+				$bs = $req->type;
 				$spe = preg_match("/[\!\@\#\$\%\^\&\*\,\.\?\+\=\-\_]/u", $id);
-				$sbs = preg_match("/[\!\@\#\$\%\^\&\*\,\.\?\+\=\-\_]/u", $bs);
+				$ckid = preg_match("/^[a-z0-9]{4,10}$/", $id);
+				$ckpw = preg_match("/^[0-9a-z]{5,15}$/", $pw);
 				if (empty($id) || empty($pw) || empty($ad) || empty($bs)) {
 					$res->isSuccess = false;
 					$res->code = 00;
-					$res->message = "공백이 입력됬습니다";
+					$res->message = "공백이 입력됐습니다";
 					http_response_code(200);
-				} else if ($spe == 1 || $sbs == 1) {
+				} else if ($spe == 1) {
 					$res->isSuccess = false;
 					$res->code = 10;
-					$res->message = "id나 직종에 특수문자가 입력됬습니다";
+					$res->message = "id에 특수문자가 입력됬습니다";
 					http_response_code(200);
+				} else if ($ckid != 1) {
+					$res->isSuccess = false;
+					$res->code = 20;
+					$res->message = "id는 4자 이상 10자 이하 영소문자/숫자 허용으로 만들어주세요";
+				} else if ($ckpw != 1) {
+					$res->isSuccess = false;
+					$res->code = 30;
+					$res->message = "pw는 5자 이상 15자 이하의 숫자와 소문자 조합으로 만들어주세요";
 				} else {
-					$res->id = Signup($id, $pw, $ad, $bs);
+					$bs = getBusiness($bs);
+					if ($bs == false) {
+						$res->isSuccess = false;
+						$res->code = 20;
+						$res->message = "요식업이 잘못 입력됐습니다";
+						http_response_code(200);
+						echo json_encode($res, JSON_NUMERIC_CHECK);
+						break;
+					}
+					$res->id = signUp($id, $pw, $ad, $bs);
 					$res->isSuccess = true;
 					$res->code = 200;
 					$res->message = "회원가입성공";

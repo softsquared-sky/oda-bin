@@ -22,7 +22,7 @@
 		try {
 			$data = getDataByJWToken($jwt, $key);
 			//로그인 함수 직접 구현 요함
-			return isValidJWToken($data->email, $data->phoneNo, $jwt, $data->authNo);
+			return isValidJWToken($data->id, $data->pw);
 		} catch (\Exception $e) {
 			return false;
 		}
@@ -174,8 +174,7 @@
 //        fpassthru($fp);
 		fclose($fp);
 	}
-
-	function GetBusiness($bs){
+	function getBusiness($bs){
 		if($bs == 1){
 			$res = "한식";
 		}else if($bs == 2){
@@ -190,12 +189,10 @@
 			$res = "베이커리/카페";
 		}else if($bs == 7){
 			$res = "패스트푸드";
-		}else{
+		}else if($bs == 8){
 			$res = "기타";
+		}else{
+			$res = false;
 		}
 		return $res;
 	}
-	//
-	//function CheckBs($bs){
-	//
-	//}

@@ -50,7 +50,7 @@
 
 	}
 
-	function CheckId($id)
+	function checkId($id)
 	{
 		$pdo = pdoSqlConnect();
 		$query = "SELECT EXISTS(SELECT * FROM User WHERE id= ?) AS exist;";
@@ -66,7 +66,7 @@
 		return intval($res[0]["exist"]);
 	}
 
-	function signup($id, $pw, $ad, $business)
+	function signUp($id, $pw, $ad, $business)
 	{
 		$pdo = pdoSqlConnect();
 		$query = "INSERT INTO User(id, pw, business,address)
@@ -118,22 +118,65 @@
 		return intval($res[0]["exist"]);
 	}
 
-	function Search($pName)
+	function search($pName,$turn)
 	{
 		$pdo = pdoSqlConnect();
-		$query = "SELECT p.pNum,p.pName,p.price,i.imageUrl from Product as p inner join ProductImage as i on p.pNum = i.pNum where (p.pName like ? and i.turn = 1);";
+		$query = "SELECT p.pNum,p.pName,p.odaPrice,i.imageUrl from Product as p inner join ProductImage as i on p.pNum = i.pNum where (p.pName like ?  and i.type = 'main' and i.turn = 1);";
 		$st = $pdo->prepare($query);
 		$st->execute(["%$pName%"]);
 		$st->setFetchMode(PDO::FETCH_ASSOC);
 		$res = $st->fetchAll();
 		$st = null;
+		$query = "INSERT INTO Word(word) VALUES (?);";
+		$st = $pdo->prepare($query);
+		$st->execute(["$pName"]);
+		$st = null;
 		$pdo = null;
 		return $res;
 	}
 
-	function ViewProduct($pNum){
+	function viewProduct($pNum){
+		$res = Array();
 		$pdo = pdoSqlConnect();
-		$query = "SELECT p.pNum,p.pName,p.price,i.imageUrl from Product as p inner join ProductImage as i on p.pNum = i.pNum where (p.pNum = ? and i.turn = 1);";
+		$query = "SELECT p.pNum,p.pName,p.odaPrice p from Product as p where p.pNum =?;";
+		$st = $pdo->prepare($query);
+		$st->execute([$pNum]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res["basicContent"] = $st->fetchAll();
+		$st = null;
+		$query = "SELECT imageUrl,turn from ProductImage where pNum = ? and type = 'main' order by turn;";
+		$st = $pdo->prepare($query);
+		$st->execute([$pNum]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res["imageResult"] = Array();
+		$res["imageResult"] = $st->fetchAll();
+		$st = null;
+		$pdo = null;
+		return $res;
+	}
+
+	function viewProductDetail($pNum){
+		$pdo = pdoSqlConnect();
+		$query = "SELECT p.qpp,p.storeMethod,p.origin from ProductDetail as p where p.pNum =?;";
+		$st = $pdo->prepare($query);
+		$st->execute([$pNum]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res["detailContent"] = $st->fetchAll();
+		$st = null;
+		$query = "SELECT imageUrl,turn from ProductImage where pNum = ? and type = 'detail' order by turn;";
+		$st = $pdo->prepare($query);
+		$st->execute([$pNum]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res["imageResult"] = Array();
+		$res["imageResult"] = $st->fetchAll();
+		$st = null;
+		$pdo = null;
+		return $res;
+	}
+
+	function viewProductReview($pNum){
+		$pdo = pdoSqlConnect();
+		$query = "select id,review,reviewDate,reviewImage from Review where pNum = ?;";
 		$st = $pdo->prepare($query);
 		$st->execute([$pNum]);
 		$st->setFetchMode(PDO::FETCH_ASSOC);
@@ -142,29 +185,29 @@
 		$pdo = null;
 		return $res;
 	}
-
-	function ViewProductDetail($pNum){
+	function putReview($id,$pNum,$review,$ig){
+		$rday = date("Y-m-d");
 		$pdo = pdoSqlConnect();
-		$query = "SELECT p.pNum,p.qpp,p.storeMethod,p.origin,i.imageUrl from ProductDetail as p inner join ProductImage as i on p.pNum = i.pNum where p.pNum = ? order by i.turn;";
+		$query = "INSERT INTO Review(pNum,id, review, reviewDate,reviewImage)
+					SELECT ?,?,?,?,? FROM DUAL
+					WHERE EXISTS(
+					SELECT id FROM Pay
+					WHERE id = ? and pNum = ? )
+                    and NOT EXISTS(SELECT id FROM Review
+					WHERE id = ? and pNum = ?);";
 		$st = $pdo->prepare($query);
-		$st->execute([$pNum]);
-		$st->setFetchMode(PDO::FETCH_ASSOC);
-		$res = $st->fetchAll();
-		$st = null;
-		$pdo = null;
-		return $res;
-	}
-
-	function ViewProductReview($pNum){
-		$pdo = pdoSqlConnect();
-		$query = "select r.id,r.review,r.reviewDate from Review as r where pNum = ?;";
-		$st = $pdo->prepare($query);
-		$st->execute([$pNum]);
-		$st->setFetchMode(PDO::FETCH_ASSOC);
-		$res = $st->fetchAll();
-		$st = null;
-		$pdo = null;
-		return $res;
+		if($st->execute([$pNum,$id,$review,$rday,$ig,$id,$pNum,$id,$pNum])){
+			$res = $rday;
+			$st = null;
+			$pdo = null;
+			return $res;
+		}
+		else{
+			$st = null;
+			$pdo = null;
+			$res = null;
+			return $res;
+		}
 	}
 	// CREATE
 	//    function addMaintenance($message){

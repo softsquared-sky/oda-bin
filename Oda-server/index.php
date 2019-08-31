@@ -10,14 +10,17 @@
 	date_default_timezone_set('Asia/Seoul');
 	ini_set('default_charset', 'utf8mb4');
 
+
+
 //에러출력하게 하는 코드
-//error_reporting(E_ALL); ini_set("display_errors", 1);
+//	error_reporting(E_ALL);
+//	ini_set("display_errors", 1);
 
 //Main Server API
 	$dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
 		/* ******************   Test   ****************** */
 //    $r->addRoute('GET', '/', ['IndexController', 'index']);
-//    $r->addRoute('GET', '/test', ['IndexController', 'test']);
+		$r->addRoute('GET', '/test', ['IndexController', 'test']);
 //    $r->addRoute('GET', '/test/{testNo}', ['IndexController', 'testDetail']);
 //    $r->addRoute('POST', '/test', ['IndexController', 'testPost']);
 //    $r->addRoute('GET', '/jwt', ['MainController', 'validateJwt']);
@@ -29,7 +32,7 @@
 		$r->addRoute('GET', '/product/{productNum}', ['ProductController', 'viewProduct']);
 		$r->addRoute('GET', '/productDetail', ['ProductController', 'viewProductDetail']);
 		$r->addRoute('GET', '/productReview', ['ProductController', 'viewProductReview']);
-
+		$r->addRoute('POST', '/productReview', ['ProductController', 'createReview']);
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
@@ -87,15 +90,16 @@
 					$vars = $routeInfo[2];
 					require './controllers/MainController.php';
 					break;
-				/*case 'EventController':
-					$handler = $routeInfo[1][1]; $vars = $routeInfo[2];
-					require './controllers/EventController.php';
-					break;
+//				case 'EventController':
+//					$handler = $routeInfo[1][1]; $vars = $routeInfo[2];
+//					require './controllers/EventController.php';
+//					break;
 				case 'ProductController':
-					$handler = $routeInfo[1][1]; $vars = $routeInfo[2];
+					$handler = $routeInfo[1][1];
+					$vars = $routeInfo[2];
 					require './controllers/ProductController.php';
 					break;
-				case 'SearchController':
+				/*case 'SearchController':
 					$handler = $routeInfo[1][1]; $vars = $routeInfo[2];
 					require './controllers/SearchController.php';
 					break;
