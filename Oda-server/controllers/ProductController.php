@@ -144,21 +144,31 @@
 				}
 				$data = getDataByJWToken($jwt, JWT_SECRET_KEY);
 				$id = $data->id;
-				$pNum = $res->pNum;
-				$review = $res->review;
-				$ig = $res->reviewImage;
+				$pNum = $req->pNum;
+				$review = $req->review;
+				$ig = $req->reviewImage;
 				if (empty($pNum)) {
 					$res->isSuccess = false;
 					$res->code = 00;
 					$res->message = "공백이 입력됐습니다";
 					http_response_code(200);
 				} else {
-					$res->Date = putReview($id,$pNum,$review,$ig);
-					$res->isSuccess = true;
-					$res->code = 700;
-					$res->message = "상품후기등록";
-					http_response_code(200);
+					$ck = checkPay($id, $pNum);
+					if ($ck == 1) {
+						$res->Date = putReview($id, $pNum, $review, $ig);
+						$res->isSuccess = true;
+						$res->code = 700;
+						$res->message = "상품후기등록";
+						http_response_code(200);
+					} else {
+						$res->isSuccess = false;
+						$res->code = 750;
+						$res->message = "이 상품에 대한 결제내역이 없거나 이미 등록된 리뷰가 있습니다";
+						http_response_code(200);
+					}
 				}
+				echo json_encode($res, JSON_NUMERIC_CHECK);
+				break;
 		}
 	} catch (\Exception $e) {
 		return getSQLErrorException($errorLogs, $e, $req);

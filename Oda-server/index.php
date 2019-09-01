@@ -27,12 +27,14 @@
 //    $r->addRoute('POST', '/jwt', ['MainController', 'createJwt']);
 		$r->addRoute('POST', '/user', ['IndexController', 'signup']);
 		$r->addRoute('GET', '/id', ['IndexController', 'id']);
-		$r->addRoute('POST', '/user/token', ['MainController', 'login']);
+		$r->addRoute('POST', '/user/token', ['UserController', 'login']);
 		$r->addRoute('GET', '/product', ['ProductController', 'searchProduct']);
 		$r->addRoute('GET', '/product/{productNum}', ['ProductController', 'viewProduct']);
 		$r->addRoute('GET', '/productDetail', ['ProductController', 'viewProductDetail']);
 		$r->addRoute('GET', '/productReview', ['ProductController', 'viewProductReview']);
 		$r->addRoute('POST', '/productReview', ['ProductController', 'createReview']);
+		$r->addRoute('POST', '/basket', ['UserController', 'createBasket']);
+		$r->addRoute('GET', '/basket', ['UserController', 'getBasket']);
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
@@ -90,10 +92,11 @@
 					$vars = $routeInfo[2];
 					require './controllers/MainController.php';
 					break;
-//				case 'EventController':
-//					$handler = $routeInfo[1][1]; $vars = $routeInfo[2];
-//					require './controllers/EventController.php';
-//					break;
+				case 'UserController':
+					$handler = $routeInfo[1][1];
+					$vars = $routeInfo[2];
+					require './controllers/UserController.php';
+					break;
 				case 'ProductController':
 					$handler = $routeInfo[1][1];
 					$vars = $routeInfo[2];

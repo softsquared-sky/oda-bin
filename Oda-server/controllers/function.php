@@ -196,3 +196,7 @@
 		}
 		return $res;
 	}
+	//
+	//function CheckBs($bs){
+	//
+	//}

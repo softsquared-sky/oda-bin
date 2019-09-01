@@ -118,7 +118,7 @@
 		return intval($res[0]["exist"]);
 	}
 
-	function search($pName,$turn)
+	function search($pName, $turn)
 	{
 		$pdo = pdoSqlConnect();
 		$query = "SELECT p.pNum,p.pName,p.odaPrice,i.imageUrl from Product as p inner join ProductImage as i on p.pNum = i.pNum where (p.pName like ?  and i.type = 'main' and i.turn = 1);";
@@ -135,7 +135,8 @@
 		return $res;
 	}
 
-	function viewProduct($pNum){
+	function viewProduct($pNum)
+	{
 		$res = Array();
 		$pdo = pdoSqlConnect();
 		$query = "SELECT p.pNum,p.pName,p.odaPrice p from Product as p where p.pNum =?;";
@@ -155,7 +156,8 @@
 		return $res;
 	}
 
-	function viewProductDetail($pNum){
+	function viewProductDetail($pNum)
+	{
 		$pdo = pdoSqlConnect();
 		$query = "SELECT p.qpp,p.storeMethod,p.origin from ProductDetail as p where p.pNum =?;";
 		$st = $pdo->prepare($query);
@@ -174,7 +176,8 @@
 		return $res;
 	}
 
-	function viewProductReview($pNum){
+	function viewProductReview($pNum)
+	{
 		$pdo = pdoSqlConnect();
 		$query = "select id,review,reviewDate,reviewImage from Review where pNum = ?;";
 		$st = $pdo->prepare($query);
@@ -185,7 +188,9 @@
 		$pdo = null;
 		return $res;
 	}
-	function putReview($id,$pNum,$review,$ig){
+
+	function putReview($id, $pNum, $review, $ig)
+	{
 		$rday = date("Y-m-d");
 		$pdo = pdoSqlConnect();
 		$query = "INSERT INTO Review(pNum,id, review, reviewDate,reviewImage)
@@ -196,18 +201,88 @@
                     and NOT EXISTS(SELECT id FROM Review
 					WHERE id = ? and pNum = ?);";
 		$st = $pdo->prepare($query);
-		if($st->execute([$pNum,$id,$review,$rday,$ig,$id,$pNum,$id,$pNum])){
+		if ($st->execute([$pNum, $id, $review, $rday, $ig, $id, $pNum, $id, $pNum])) {
 			$res = $rday;
 			$st = null;
 			$pdo = null;
 			return $res;
-		}
-		else{
+		} else {
 			$st = null;
 			$pdo = null;
 			$res = null;
 			return $res;
 		}
+	}
+
+	function checkPay($id, $pNum)
+	{
+		$pdo = pdoSqlConnect();
+		$query = "SELECT EXISTS(SELECT id,pNum FROM Pay WHERE id= ? and pNum =?) AND NOT EXISTS(SELECT id,pNum FROM Review where id = ? and pNum = ?) AS exist;";
+		$st = $pdo->prepare($query);
+		$st->execute([$id, $pNum, $id, $pNum]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res = $st->fetchAll();
+		$st = null;
+		$pdo = null;
+
+		return intval($res[0]["exist"]);
+	}
+
+	function checkStock($pNum)
+	{
+		$pdo = pdoSqlConnect();
+		$query = "SELECT d.pNum,p.pName FROM ProductDetail as d inner join Product as p on p.pNum = d.pNum WHERE d.pNum =? and d.stock > 0;";
+		$st = $pdo->prepare($query);
+		$st->execute([$pNum]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res = $st->fetch();
+		if ($res != null) return $res['pName'];
+		$st = null;
+		$pdo = null;
+		return $res;
+
+	}
+
+	function setBasket($pNum, $pName, $id)
+	{
+		$pdo = pdoSqlConnect();
+		$query = "INSERT INTO Basket(id,pNum,pName)
+					SELECT ?,?,? FROM DUAL
+					WHERE NOT EXISTS(SELECT id FROM Basket
+					WHERE id = ? and pNum = ?);";
+		$st = $pdo->prepare($query);
+		if ($st->execute([$id, $pNum, $pName, $id, $pNum])) {
+			$res = $pName;
+			$st = null;
+			$pdo = null;
+			return $res;
+		} else {
+			$st = null;
+			$pdo = null;
+			$res = null;
+			return $res;
+		}
+	}
+
+	function getBasket($id)
+	{
+		$pdo = pdoSqlConnect();
+		$query = "SELECT n.odaPrice, n.pNum, n.pName, n.stock, i.imageUrl
+					from (SELECT tmp.odaPrice, d.stock, tmp.pNum, tmp.pName
+      					from (SELECT p.odaPrice, p.pNum, p.pName
+            					from Product as p
+                     			join Basket as b on b.pNum = p.pNum
+            					where b.id = ?) tmp
+                			inner join ProductDetail as d on tmp.pNum = d.pNum) n
+         				inner join ProductImage as i on i.pNum = n.pNum
+					where i.type = 'main'
+  					and i.turn = 1;";
+		$st = $pdo->prepare($query);
+		$st->execute([$id]);
+		$st->setFetchMode(PDO::FETCH_ASSOC);
+		$res = $st->fetchAll();
+		return $res;
+
 	}
 	// CREATE
 	//    function addMaintenance($message){
