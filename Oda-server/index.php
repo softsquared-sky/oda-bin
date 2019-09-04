@@ -35,7 +35,8 @@
 		$r->addRoute('POST', '/productReview', ['ProductController', 'createReview']);
 		$r->addRoute('POST', '/basket', ['UserController', 'createBasket']);
 		$r->addRoute('GET', '/basket', ['UserController', 'getBasket']);
-
+		$r->addRoute('POST', '/payment', ['UserController', 'payment']);
+		$r->addRoute('POST', '/directOrder', ['UserController', 'directOrder']);
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
 //    $r->addRoute('GET', '/user/{id:\d+}', 'get_user_handler');

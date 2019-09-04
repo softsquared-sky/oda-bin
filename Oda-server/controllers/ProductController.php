@@ -54,6 +54,9 @@
 				echo json_encode($res, JSON_NUMERIC_CHECK);
 				break;
 
+			case "paging":
+				break;
+
 			case "viewProduct":
 				$pNum = $_GET["pNum"];
 				if (empty($pNum)) {
@@ -147,7 +150,8 @@
 				$pNum = $req->pNum;
 				$review = $req->review;
 				$ig = $req->reviewImage;
-				if (empty($pNum)) {
+				$title = $req->reviewTitle;
+				if (empty($pNum) || empty($review) || empty($title)) {
 					$res->isSuccess = false;
 					$res->code = 00;
 					$res->message = "공백이 입력됐습니다";
@@ -155,7 +159,7 @@
 				} else {
 					$ck = checkPay($id, $pNum);
 					if ($ck == 1) {
-						$res->Date = putReview($id, $pNum, $review, $ig);
+						$res->Date = putReview($id, $pNum, $review, $ig,$title);
 						$res->isSuccess = true;
 						$res->code = 700;
 						$res->message = "상품후기등록";
